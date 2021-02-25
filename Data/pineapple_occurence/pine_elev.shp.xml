@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20210124</CreaDate><CreaTime>10161000</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process ToolSource="c:\program files (x86)\arcgis\desktop10.8\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\ExtractValuesToPoints" Date="20210124" Time="101610">ExtractValuesToPoints pine_all elev.tif G:\CP\Lauren_Marie\pineapple_suitability\pine_elev.shp NONE VALUE_ONLY</Process></lineage></DataProperties></Esri></metadata>
