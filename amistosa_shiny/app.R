@@ -1,9 +1,20 @@
 # Attach packages
 library(shiny)
 library(tidyverse)
+library(here)
+library(janitor)
 library(bslib)
 
-# Define UI for application that draws a histogram
+#---------------------------------------
+# Data
+#---------------------------------------
+suitability_change <- read.csv(here("Data", "suitability_change_output.csv")) %>% 
+  clean_names() %>% 
+  filter(rcp == "4.5")
+
+#---------------------------------------
+# UI
+#---------------------------------------
 ui <- fluidPage(
   
     # Application title
@@ -16,30 +27,43 @@ in Southern Costa Rica"),
                tabPanel("Suitbale Area Change",
                         sidebarLayout(
                           sidebarPanel("Suitability Change",
-                                       radioButtons("radio",
-                                                    label = h3("Radio buttons"),
-                                                    choices = list(
-                                                      "Coffee" = 1,
-                                                      "Cacao" = 2,
-                                                      "Pineapple" = 3),
-                                                    selected = 1),
+                                       checkboxGroupInput(inputId = "pick_change_crop",
+                                                    label = h3("Select Crop"),
+                                                    choices = unique(suitability_change$crop), selected = "Coffee"),
                                        
                                        hr(),
                                        fluidRow(column(3,
                                                        verbatimTextOutput("value")))
                           ),
-                          mainPanel("Output!",
-                                    plotOutput("sw_plot"))
+                          mainPanel("Suitability Change Plot",
+                                    plotOutput("suitability_change_plot")
+                          )
                         ))
                )
     )
 
+#---------------------------------------
 # Server
+#---------------------------------------
 server <- function(input, output) {
-
-  output$value <- renderPrint({ input$radio })
+  
+# Suitable Area Change
+  change_reactive <- reactive({
+    suitability_change %>%
+      filter(crop %in% input$pick_change_crop)
+  })
+  
+  output$suitability_change_plot <- renderPlot(
+    ggplot(data = change_reactive(), aes(x = i_time_period, y = net)) +
+      geom_point(aes(color = crop)) +
+      labs(x = "Time Period",
+           y = "Net Area Change (Hectares)") +
+      theme_minimal()
+  )
   
 }
 
+#---------------------------------------
 # Run the application 
+#---------------------------------------
 shinyApp(ui = ui, server = server)
