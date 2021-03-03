@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20210218</CreaDate><CreaTime>12441000</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process Name="Reclassify" ToolSource="c:\program files (x86)\arcgis\desktop10.8\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\Reclassify" Date="20210218" Time="124410">Reclassify G:\CP\Lauren_Marie\Cacao_binary\cur_suit Value "0.003136 0.347409 0;0.347409 0.755566 1" G:\CP\Lauren_Marie\Cacao_binary\bi_cur DATA</Process></lineage></DataProperties></Esri></metadata>

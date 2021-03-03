@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20210211</CreaDate><CreaTime>12061400</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process Name="Reclassify" ToolSource="c:\program files (x86)\arcgis\desktop10.8\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\Reclassify" Date="20210211" Time="120614">Reclassify "Current Suitability" Value "0.000020 0.410800 0;0.410800 0.769615 1" G:\CP\Lauren_Marie\Binary\bi_current DATA</Process></lineage></DataProperties></Esri></metadata>

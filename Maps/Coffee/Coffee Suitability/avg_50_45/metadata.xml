@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20201210</CreaDate><CreaTime>17463600</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process ToolSource="c:\program files (x86)\arcgis\desktop10.8\ArcToolbox\Toolboxes\Spatial Analyst Tools.tbx\RasterCalculator" Date="20201210" Time="174636">RasterCalculator "("mpi_50_45" + "miroc_50_45" + "crnm_50_45" + "chem_50_45") / 4" G:\CP\Lauren_Marie\MaxEnt\30_res\Final_Maps\Average_50_45\avg_50_45</Process></lineage></DataProperties></Esri></metadata>
