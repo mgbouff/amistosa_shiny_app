@@ -14,11 +14,11 @@ library(shinythemes)
 # Inputs
 #---------------------------------------
 
-osa_theme <- bs_theme(
-  bg = "#0DC489",
-  fg = "white",
-  primary = "black",
-  base_font = font_google("Crimson Text"))
+# osa_theme <- bs_theme(
+#   bg = "white",
+#   fg = "#17AA8B",
+#   primary = "#454545",
+#   base_font = font_google("Merriweather"))
 
 # Map color palettes
 time_combo_palette <- c("#c0c0c0","#707170","#f2ea02", "#d9d561", "#569ecd", "#5e8299", "#cadc70", "#8fa428")
@@ -69,8 +69,7 @@ total_hectares45 <- read.csv(here("Data", "total_hectares45.csv")) %>%
 # UI
 #---------------------------------------
 
-ui <- fluidPage(
-  # theme = osa_theme,
+ui <- fluidPage(theme = "osa.css",
   
   # Application title
   titlePanel("Wildlife-Friendly Farming and Crop Resilience 
@@ -81,7 +80,7 @@ in Southern Costa Rica"),
                       
                       mainPanel(
                         
-                        h4("Understanding Climate-driven Shifts in Crop Suitability"),
+                        h3("Understanding Climate-driven Shifts in Crop Suitability"),
                         
                         p("Rising temperatures and changing precipitation patterns associated with climate change stand to strongly affect farming and food systems worldwide. As climate change intensifies, suitable ranges for the quality and survival of crops important to the Talamanca-Osa region may shift and necessitate crop switches, farm expansion, or farm relocation."),
                         
@@ -96,38 +95,37 @@ in Southern Costa Rica"),
 
 # Time combo maps  
 #--------------------------------------- 
-
-               # tabPanel("Suitability Maps",
-               #          sidebarLayout(
-               #            sidebarPanel("Crop Suitability",
-               #                         radioButtons(inputId = "pick_crop_suit", 
-               #                                      label = h3("Select Time Period"),
-               #                                      choices = list("Pineapple" = "pineapple_45", 
-               #                                                     "Cacao" = "cacao_45", 
-               #                                                     "Coffee" = "coffee_45"), 
-               #                                      selected = "pineapple_45"),
-               #                         
-               #                         hr(),
-               #                         fluidRow(column(3, verbatimTextOutput("value")))
-               #                         ), # Close time combo sidebarPanel
-               #          mainPanel("Time period suitability rasters",
-               #                    tmapOutput("time_tmap")) # Close time combo mainPanel
-               #          ) # Close time combo sidebarLayout
-               #          ), # Close time combo tabPanel
+tabPanel("Suitability Maps",
+         sidebarLayout(
+           sidebarPanel(
+                        radioButtons(inputId = "pick_crop_suit",
+                                     label = ("Select Crop"),
+                                     choices = c("Pineapple" = "pineapple_45",
+                                                 "Cacao" = "cacao_45",
+                                                 "Coffee" = "coffee_45"),
+                                     selected = "pineapple_45")
+           ),
+           mainPanel(
+             h3("Projected Crop Suitability Maps"),
+                     tmapOutput("time_tmap")
+           )
+         )
+),
 
 # Crop combo maps  
 #--------------------------------------- 
 tabPanel("Crop Overlap Maps",
          sidebarLayout(
-           sidebarPanel("Crop Suitability Overlap",
+           sidebarPanel(
                         radioButtons(inputId = "pick_time_period",
-                                     label = h3("Select Time Period"),
+                                     label = ("Select Time Period"),
                                      choices = c("Current" = "tri_all_cur",
                                                  "2050" = "tri_45_50",
                                                  "2070" = "tri_70_45"),
                                      selected = "tri_all_cur")
            ),
-           mainPanel("OUTPUT!",
+           mainPanel(
+             h3("Projeted Crop Suitability Overlap"),
                      tmapOutput("combo_tmap")
                      )
            )
@@ -137,7 +135,7 @@ tabPanel("Crop Overlap Maps",
 #---------------------------------------
 tabPanel("Suitability Area Change",
          sidebarLayout(
-           sidebarPanel("Suitability Change",
+           sidebarPanel(
                         checkboxGroupInput(inputId = "pick_crop_change",
                                            label = "Select Crop",
                                            choices = unique(total_hectares45$crop),
@@ -145,7 +143,8 @@ tabPanel("Suitability Area Change",
                         hr(),
                         fluidRow(column(3, verbatimTextOutput("value")))
            ),
-           mainPanel("Suitability Change Plot",
+           mainPanel(
+             h3("Suitability Change Plot"),
                      plotOutput("suitability_hectare_plot")
                      )
            )
@@ -161,24 +160,18 @@ server <- function(input, output) {
 
 # Time combo maps  
 #---------------------------------------
-  # time_combo_reactive <- reactive({
-  #   time_stack_df %>%
-  #     dplyr::select(x, y, input$pick_crop_suit)
-  #   time_raster <- raster::rasterFromXYZ(time_stack_df, crs = crs(crop_current))
-  # })
-  # 
-  # # output$time_tmap = renderLeaflet({
-  # #   leaflet() %>% 
-  # #     addRasterImage
-  # # })
-  # 
-  #   output$time_tmap = renderTmap({
-  #   tm_shape(time_combo_reactive) +
-  #     tm_raster(style = "cat", palette = time_combo_palette) +
-  #     tm_shape(study_area) +
-  #     tm_borders("black") +
-  #     tm_basemap("Esri.WorldTopoMap")
-  # })
+  time_combo_reactive <- reactive({
+    time_subset <- subset(time_stack, input$pick_crop_suit)
+  })
+  
+  output$time_tmap <- renderTmap({
+    tm_shape(time_combo_reactive())+
+      tm_raster(input$pick_crop_suit, style = "cat", palette = time_combo_palette) +
+      tm_shape(study_area) +
+      tm_borders("black") +
+      tm_basemap("Esri.WorldTopoMap") +
+      tm_scale_bar(position = c("left", "bottom"))
+  })
   
 # Crop combo maps  
 #---------------------------------------  
@@ -192,7 +185,6 @@ server <- function(input, output) {
     tm_shape(study_area) +
       tm_borders("black") +
       tm_basemap("Esri.WorldTopoMap") +
-      tm_compass(position = c("left", "bottom")) +
       tm_scale_bar(position = c("left", "bottom"))
   })
   

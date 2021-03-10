@@ -1,0 +1,54 @@
+/* Amistosa Shiny App Theme */
+
+/* Import Google fonnts */
+@import url('https://fonts.google.com/specimen/Raleway?preview.text_type=custom#standard-styles');
+
+@import url('https://fonts.google.com/specimen/Merriweather?preview.text_type=custom');
+
+/* Headers */
+h2{
+  font-family: "Raleway";
+  font-size: 30px;
+  color: #17AA8B;
+}
+
+h3{
+  font-family: "Raleway";
+  font-size: 20px;
+  color: #2A746A;
+}
+
+body {
+  font-family: "Merriweather";
+  color: #454545;
+  background-color: white;
+}
+
+/* 
+.navbar { background-color: #0DC489;
+  font-family: "Raleway";
+  font-size: 13px;
+  color: white;
+}
+
+.navbar-dropdown { background-color: #298567;
+  font-family: Arial;
+  font-size: 13px;
+  color: white; }
+
+.navbar-default {
+  font-family: "Raleway"
+  background-color: #0DC489 !important;
+}
+
+.navbar-default:hover {
+  font-family: "Raleway"
+  background-color: #0DC489 !important;
+  color: white;
+} */
+
+.console {
+	background: magenta;
+	padding: 20px;
+	color: white;
+}
