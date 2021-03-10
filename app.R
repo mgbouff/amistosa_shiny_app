@@ -14,16 +14,10 @@ library(shinythemes)
 # Inputs
 #---------------------------------------
 
-# osa_theme <- bs_theme(
-#   bg = "white",
-#   fg = "#17AA8B",
-#   primary = "#454545",
-#   base_font = font_google("Merriweather"))
-
 # Map color palettes
 time_combo_palette <- c("#c0c0c0","#707170","#f2ea02", "#d9d561", "#569ecd", "#5e8299", "#cadc70", "#8fa428")
 
-crop_combo_palette <- c("#c0c0c0", "#9874a1", "#85c2c0", "#6380a6", "#fef287", "#cbb6b2", "#72cf8e", "#21908d")
+crop_combo_palette <- c("#c0c0c0", "#9874a1", "#85c2c0", "#fef287", "#cbb6b2", "#72cf8e", "#21908d")
 
 # Study area shapefile
 study_area <- read_sf(here("Maps", "study_area", "studyArea.shp"))
@@ -54,6 +48,8 @@ crop_50_45 <- raster(here("Maps", "Crop_combos", "tri_45_50.tif"))
 crop_50_85 <- raster(here("Maps", "Crop_combos", "tri_50_85.tif"))
 
 crop_70_45 <- raster(here("Maps", "Crop_combos", "tri_70_45.tif"))
+NAvalue(crop_70_45) <- 60
+plot(crop_70_45)
 
 crop_70_85 <- raster(here("Maps", "Crop_combos", "tri_70_45.tif"))
 
@@ -62,6 +58,10 @@ crop_stack <- raster::stack(crop_current, crop_50_45, crop_70_45)
 # Suitability Change data
 #---------------------------------------
 total_hectares45 <- read.csv(here("Data", "total_hectares45.csv")) %>%
+  clean_names() %>%
+  group_by(crop)
+
+total_hectares85 <- read.csv(here("Data", "total_hectares_85.csv")) %>%
   clean_names() %>%
   group_by(crop)
 
@@ -103,7 +103,16 @@ tabPanel("Suitability Maps",
                                      choices = c("Pineapple" = "pineapple_45",
                                                  "Cacao" = "cacao_45",
                                                  "Coffee" = "coffee_45"),
-                                     selected = "pineapple_45")
+                                     selected = "pineapple_45"),
+                        
+                        img(src = "time_legend.png", height = "100%", width = "100%",
+                            style="display: block; margin-left: auto; margin-right: auto;"),
+                        img(src = "Unsuitable.PNG", height = "40%", width = "40%",
+                            style="display: block; margin-left: auto; margin-right: auto;"),
+                        br(),
+                        
+                        p("Suitability maps were created to show how suitable area for growing each crop will shift from the current to 2050 and 2070 time periods. This combination map illustrates overlaps and differences between the three time periods for each crop. Knowing when and where these staple crops are likely to shift due to climate change in the coming decades allows farmers to plan to long term shifts or crop switches and helps inform the implementation of sustainable farming techniques.")
+                        
            ),
            mainPanel(
              h3("Projected Crop Suitability Maps"),
@@ -122,7 +131,16 @@ tabPanel("Crop Overlap Maps",
                                      choices = c("Current" = "tri_all_cur",
                                                  "2050" = "tri_45_50",
                                                  "2070" = "tri_70_45"),
-                                     selected = "tri_all_cur")
+                                     selected = "tri_all_cur"),
+                        
+                        img(src = "crop_legend.PNG", height = "100%", width = "100%",
+                            style="display: block; margin-left: auto; margin-right: auto;"),
+                        img(src = "Unsuitable.PNG", height = "40%", width = "40%",
+                            style="display: block; margin-left: auto; margin-right: auto;"),
+                        br(),
+                        
+                        p("Crop overlap maps were created to show how suitable area for growing each crop intersect with each other during the current time period and projected future 2050 and 2070 time periods. This is important information for farmers and conservationists to use in their long term planning because of differneces in the production of the three crops. Pineapple tends to be grown on large-scale monoculture plantations and is associated with environmental and social harm. Coffee and cacao on the other hand can be grown by small-holder farms can be grown with agroforestry techniques such as including an understory of native trees, that support wildlife connectivity.")
+                        
            ),
            mainPanel(
              h3("Projeted Crop Suitability Overlap"),
@@ -135,17 +153,28 @@ tabPanel("Crop Overlap Maps",
 #---------------------------------------
 tabPanel("Suitability Area Change",
          sidebarLayout(
-           sidebarPanel(
-                        checkboxGroupInput(inputId = "pick_crop_change",
-                                           label = "Select Crop",
+           sidebarPanel(# RCP 4.5
+                        checkboxGroupInput(inputId = "pick_change_45",
+                                           label = "Select Crop RCP 4.5",
                                            choices = unique(total_hectares45$crop),
                                            selected = "Pineapple"),
+                        # RCP 8.5
+                        checkboxGroupInput(inputId = "pick_change_85",
+                                           label = "Select Crop RCP 8.5",
+                                           choices = unique(total_hectares85$crop),
+                                           selected = "Pineapple"),
                         hr(),
-                        fluidRow(column(3, verbatimTextOutput("value")))
+                        fluidRow(column(3, verbatimTextOutput("value"))),
+                        
+                        br(),
+                        
+                        p("The severity of future climate change depends on how quickly the world is able to reduce our carbon footprint now. Climate scientists have developed models for different future climate scenarios, called Relative Concentration Pathways (RCPs) that are based on how quickly we reduce our greenhouse gas emissions. They range from best case scenario where countries pull together and reduce our global emissions, and worst case scenarios where carbon emissions continue to increase. This app looks at how the change in total suitable area for each crop changes for future time periods depending on which RCP is used. Here, we selected RCP 4.5 which is considered a fairly 'middle of the road' scenario in which future warmins is limited to 3°C, and RCP 8.5 where emissions continue to rise and we see severe warming impacts.")
            ),
+           
            mainPanel(
              h3("Suitability Change Plot"),
-                     plotOutput("suitability_hectare_plot")
+                    plotOutput("suitability_45_plot"),
+                    plotOutput("suitability_85_plot")
                      )
            )
          )
@@ -166,11 +195,12 @@ server <- function(input, output) {
   
   output$time_tmap <- renderTmap({
     tm_shape(time_combo_reactive())+
-      tm_raster(input$pick_crop_suit, style = "cat", palette = time_combo_palette) +
+      tm_raster(input$pick_crop_suit, style = "cat", palette = time_combo_palette, legend.show = FALSE) +
       tm_shape(study_area) +
       tm_borders("black") +
       tm_basemap("Esri.WorldTopoMap") +
-      tm_scale_bar(position = c("left", "bottom"))
+      tm_scale_bar(position = c("left", "bottom")) + 
+      tm_layout(legend.show=FALSE)
   })
   
 # Crop combo maps  
@@ -181,7 +211,7 @@ server <- function(input, output) {
   
   output$combo_tmap <- renderTmap({
     tm_shape(crop_combo_reactive())+
-      tm_raster(input$pick_time_period, style = "cat", palette = crop_combo_palette) +
+      tm_raster(input$pick_time_period, style = "cat", palette = crop_combo_palette, legend.show = FALSE) +
     tm_shape(study_area) +
       tm_borders("black") +
       tm_basemap("Esri.WorldTopoMap") +
@@ -190,19 +220,41 @@ server <- function(input, output) {
   
 # Suitable Area Change
 #---------------------------------------
-    hectare_reactive <- reactive({
+  
+  # RCP 4.5
+    hectare_reactive_45 <- reactive({
       total_hectares45 %>%
-        filter(crop %in% input$pick_crop_change)
+        filter(crop %in% input$pick_change_45)
     })
     
-    output$suitability_hectare_plot <- renderPlot(
-      ggplot(data = hectare_reactive(), aes(x = time_period,
+    output$suitability_45_plot <- renderPlot(
+      ggplot(data = hectare_reactive_45(), aes(x = time_period,
                                             y = suitable_hectares)) +
         geom_point(aes(color = crop)) +
-        geom_line(aes(color = crop)) +
-        labs(title = "Total Suitable Hectares",
+        geom_line(aes(color = crop), size = 2) +
+        labs(title = "Total Suitable Hectares RCP 4.5",
              x = "Time Period",
-             y = "Number of Hectares") +
+             y = "Number of Suitable Hectares") +
+        scale_x_continuous(breaks = c(2020, 2050, 2070),
+                           labels = c("Current","2050","2070")) +
+        scale_color_manual(values = c("#85c2c0", "#9874a1", "#fef287")) +
+        theme_minimal()
+    )
+    
+  # RCP 8.5
+    hectare_reactive_85 <- reactive({
+      total_hectares85 %>%
+        filter(crop %in% input$pick_change_85)
+    })
+    
+    output$suitability_85_plot <- renderPlot(
+      ggplot(data = hectare_reactive_85(), aes(x = time_period,
+                                            y = suitable_hectares)) +
+        geom_point(aes(color = crop)) +
+        geom_line(aes(color = crop), size = 2) +
+        labs(title = "Total Suitable Hectares RCP 8.5",
+             x = "Time Period",
+             y = "Number of Suitable Hectares") +
         scale_x_continuous(breaks = c(2020, 2050, 2070),
                            labels = c("Current","2050","2070")) +
         scale_color_manual(values = c("#85c2c0", "#9874a1", "#fef287")) +
