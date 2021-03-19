@@ -48,12 +48,9 @@ crop_50_45 <- raster(here("Maps", "Crop_combos", "tri_45_50.tif"))
 crop_50_85 <- raster(here("Maps", "Crop_combos", "tri_50_85.tif"))
 
 crop_70_45 <- raster(here("Maps", "Crop_combos", "tri_70_45.tif"))
-NAvalue(crop_70_45) <- 60
-plot(crop_70_45)
 
 crop_70_85 <- raster(here("Maps", "Crop_combos", "tri_70_45.tif"))
 
-crop_stack <- raster::stack(crop_current, crop_50_45, crop_70_45)
 
 # Suitability Change data
 #---------------------------------------
@@ -211,7 +208,7 @@ server <- function(input, output) {
   
   output$combo_tmap <- renderTmap({
     tm_shape(crop_combo_reactive())+
-      tm_raster(input$pick_time_period, style = "cat", palette = crop_combo_palette, legend.show = FALSE) +
+      tm_raster(input$pick_time_period, style = "cat", palette = c("0" = "#c0c0c0", "10" = "#9874a1", "50" = "#85c2c0", "60" = "#6380a6", "200" = "#fef287", "210" = "#cbb6b2", "250" = "#72cf8e", "260" = "#21908d"), legend.show = FALSE) +
     tm_shape(study_area) +
       tm_borders("black") +
       tm_basemap("Esri.WorldTopoMap") +
@@ -237,7 +234,7 @@ server <- function(input, output) {
              y = "Number of Suitable Hectares") +
         scale_x_continuous(breaks = c(2020, 2050, 2070),
                            labels = c("Current","2050","2070")) +
-        scale_color_manual(values = c("#85c2c0", "#9874a1", "#fef287")) +
+        scale_color_manual(values = c("Cacao" = "#85c2c0", "Coffee" = "#9874a1", "Pineapple" = "#fef287")) +
         theme_minimal()
     )
     
@@ -257,7 +254,7 @@ server <- function(input, output) {
              y = "Number of Suitable Hectares") +
         scale_x_continuous(breaks = c(2020, 2050, 2070),
                            labels = c("Current","2050","2070")) +
-        scale_color_manual(values = c("#85c2c0", "#9874a1", "#fef287")) +
+        scale_color_manual(values = c("Cacao" = "#85c2c0", "Coffee" = "#9874a1", "Pineapple" = "#fef287")) +
         theme_minimal()
     )
   
