@@ -18,6 +18,12 @@ h3{
   color: #2A746A;
 }
 
+h6{
+  font-family: "Raleway";
+  font-size: 10px;
+  color: #747474;
+}
+
 body {
   font-family: "Merriweather";
   color: #454545;

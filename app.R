@@ -86,6 +86,8 @@ in Southern Costa Rica"),
                         
                         img(src = "agroforestry.jpg", height = 280, width = 324,
                             style="display: block; margin-left: auto; margin-right: auto;"),
+                        h6("Photo credit: National Geographic",
+                           align = "center"),
                         
                         br(),
                         
@@ -139,11 +141,11 @@ tabPanel("Crop Overlap Maps",
                             style="display: block; margin-left: auto; margin-right: auto;"),
                         br(),
                         
-                        p("Crop overlap maps were created to show how suitable area for growing each crop intersect with each other during the current time period and projected future 2050 and 2070 time periods. This is important information for farmers and conservationists to use in their long term planning because of differneces in the production of the three crops. Pineapple tends to be grown on large-scale monoculture plantations and is associated with environmental and social harm. Coffee and cacao on the other hand can be grown by small-holder farms can be grown with agroforestry techniques such as including an understory of native trees, that support wildlife connectivity.")
+                        p("Crop overlap maps were created to show how suitable area for growing each crop intersect with each other during the current time period and projected future 2050 and 2070 time periods. This is important information for farmers and conservationists to use in their long term planning because of differences in the production of the three crops. Pineapple tends to be grown on large-scale monoculture plantations and is associated with environmental and social harm. Coffee and cacao on the other hand can be grown by small-holder farms can be grown with agroforestry techniques such as including an understory of native trees, that support wildlife connectivity.")
                         
            ),
            mainPanel(
-             h3("Projeted Crop Suitability Overlap"),
+             h3("Projected Crop Suitability Overlap"),
                      tmapOutput("combo_tmap")
                      )
            )
@@ -165,9 +167,7 @@ tabPanel("Suitability Area Change",
                                            selected = "Pineapple"),
                         hr(),
                         fluidRow(column(3, verbatimTextOutput("value"))),
-                        
-                        br(),
-                        
+                      
                         p("The severity of future climate change depends on how quickly the world is able to reduce our carbon footprint now. Climate scientists have developed models for different future climate scenarios, called Relative Concentration Pathways (RCPs) that are based on how quickly we reduce our greenhouse gas emissions. They range from best case scenario where countries pull together and reduce our global emissions, and worst case scenarios where carbon emissions continue to increase. This app looks at how the change in total suitable area for each crop changes for future time periods depending on which RCP is used. Here, we selected RCP 4.5 which is considered a fairly 'middle of the road' scenario in which future warmins is limited to 3°C, and RCP 8.5 where emissions continue to rise and we see severe warming impacts.")
            ),
            
