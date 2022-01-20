@@ -51,6 +51,8 @@ crop_70_45 <- raster(here("Maps", "Crop_combos", "tri_70_45.tif"))
 
 crop_70_85 <- raster(here("Maps", "Crop_combos", "tri_70_45.tif"))
 
+crop_stack_45 <- raster::stack(crop_current, crop_50_45, crop_70_45)
+
 
 # Suitability Change data
 #---------------------------------------
@@ -203,7 +205,7 @@ server <- function(input, output) {
 # Crop combo maps  
 #---------------------------------------  
   crop_combo_reactive <- reactive({
-    crop_subset <- subset(crop_stack, input$pick_time_period)
+    crop_subset <- subset(crop_stack_45, input$pick_time_period)
   })
   
   output$combo_tmap <- renderTmap({
