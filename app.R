@@ -9,6 +9,13 @@ library(tmap)
 library(fasterize)
 library(bslib)
 library(shinythemes)
+library(rsconnect)
+
+# tmap fix
+tmap_options(check.and.fix = TRUE)
+
+# sf fix?
+# sf_use_s2(FALSE)
 
 #---------------------------------------
 # Inputs
