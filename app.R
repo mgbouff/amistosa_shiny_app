@@ -10,12 +10,14 @@ library(fasterize)
 library(bslib)
 library(shinythemes)
 library(rsconnect)
+library(s2plot)
+library(rgdal)
 
 # tmap fix
 tmap_options(check.and.fix = TRUE)
 
-# sf fix?
-# sf_use_s2(FALSE)
+# Turn off spherical geometry
+# sf::sf_use_s2(TRUE)
 
 #---------------------------------------
 # Inputs
@@ -27,7 +29,10 @@ time_combo_palette <- c("#c0c0c0","#707170","#f2ea02", "#d9d561", "#569ecd", "#5
 crop_combo_palette <- c("#c0c0c0", "#9874a1", "#85c2c0", "#fef287", "#cbb6b2", "#72cf8e", "#21908d")
 
 # Study area shapefile
-study_area <- read_sf(here("Maps", "study_area", "studyArea.shp"))
+study_area <- read_sf(here("Maps", "study_area", "studyArea.shp")) %>% 
+  st_make_valid()
+
+# st_is_valid(study_area)
 
 # Time combo data
 #---------------------------------------
@@ -65,11 +70,14 @@ crop_stack_45 <- raster::stack(crop_current, crop_50_45, crop_70_45)
 #---------------------------------------
 total_hectares45 <- read.csv(here("Data", "total_hectares45.csv")) %>%
   clean_names() %>%
-  group_by(crop)
+  mutate("Crop" = crop) %>% 
+  group_by(Crop)
+  
 
 total_hectares85 <- read.csv(here("Data", "total_hectares_85.csv")) %>%
   clean_names() %>%
-  group_by(crop)
+  mutate("Crop" = crop) %>% 
+  group_by(Crop)
 
 #---------------------------------------
 # UI
@@ -236,15 +244,23 @@ server <- function(input, output) {
     output$suitability_45_plot <- renderPlot(
       ggplot(data = hectare_reactive_45(), aes(x = time_period,
                                             y = suitable_hectares)) +
-        geom_point(aes(color = crop)) +
-        geom_line(aes(color = crop), size = 2) +
+        geom_point(aes(color = Crop)) +
+        geom_line(aes(color = Crop), size = 2) +
         labs(title = "Total Suitable Hectares RCP 4.5",
              x = "Time Period",
              y = "Number of Suitable Hectares") +
         scale_x_continuous(breaks = c(2020, 2050, 2070),
                            labels = c("Current","2050","2070")) +
         scale_color_manual(values = c("Cacao" = "#85c2c0", "Coffee" = "#9874a1", "Pineapple" = "#fef287")) +
-        theme_minimal()
+        theme_minimal() +
+        theme(
+          text = element_text(size = 14),
+          plot.title = element_text(size = 16, face = "bold"),
+          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), size = 14),
+          axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 20, l = 0), size = 14),
+          legend.title = element_text(size = 14, face = "bold")
+        ) +
+        guides(fill = guide_legend(title = "Crop"))
     )
     
   # RCP 8.5
@@ -256,15 +272,23 @@ server <- function(input, output) {
     output$suitability_85_plot <- renderPlot(
       ggplot(data = hectare_reactive_85(), aes(x = time_period,
                                             y = suitable_hectares)) +
-        geom_point(aes(color = crop)) +
-        geom_line(aes(color = crop), size = 2) +
+        geom_point(aes(color = Crop)) +
+        geom_line(aes(color = Crop), size = 2) +
         labs(title = "Total Suitable Hectares RCP 8.5",
              x = "Time Period",
              y = "Number of Suitable Hectares") +
         scale_x_continuous(breaks = c(2020, 2050, 2070),
                            labels = c("Current","2050","2070")) +
         scale_color_manual(values = c("Cacao" = "#85c2c0", "Coffee" = "#9874a1", "Pineapple" = "#fef287")) +
-        theme_minimal()
+        theme_minimal() +
+        guides(fill = guide_legend(title = "Crop")) +
+        theme(
+          text = element_text(size = 14),
+          plot.title = element_text(size = 16, face = "bold"),
+          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), size = 14),
+          axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), size = 14),
+          legend.title = element_text(size = 14, face = "bold")
+        ) 
     )
   
 } # Close Server
